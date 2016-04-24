@@ -1,0 +1,17 @@
+{
+    "contents" : "library(shiny);\nlibrary(NLP);\nlibrary(openNLP);\nlibrary(tm);\nlibrary(stringr)\n\nload(\"alltrigrams.Rdat\");  # load the saved trigrams as named vector\ndf <- data.frame(do.call('rbind', strsplit(names(alltrigrams),' ',fixed=TRUE)), \n                 count=alltrigrams, stringsAsFactors = F);\n\nrow.names(df) = NULL;\nremove(alltrigrams);\n\nbadwords <- readLines(\"badwords.txt\", encoding=\"UTF-8\")\nbadwords = gsub(\"[^a-z ]\",\"\",badwords)\nstopwords_list <- stopwords(\"english\")\n\ncleanSentence <- function(str) {\n  str = tolower(str);\n  str = gsub(\"[^a-z \\\\-]\",\"\",str)\n  str = gsub(\"[\\\\-]\",\" \",str)\n  str = gsub(\"\\\\b([a-z])+\\\\1\\\\b\", \" \", str);\n  str = gsub(\"^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$\", \" \", str) # roman numerals\n  str = removeWords(str, stopwords_list);\n  str = removeWords(str, badwords);\n  str = stripWhitespace(str);\n  str\n}\n\npredict_with_2endWords <- function(words, idx) {\n  if (idx > 1)\n    results <- df[df$X1 == words[idx-1] & df$X2 == words[idx], ]\n  else\n    results <- df[df$X2 == words[idx], ];\n  if (nrow(results) == 0)\n    results <- df[df$X2 == words[idx], ];\n  results\n}\n\nfirst_time = T\npredict_with_trigrams <- function(str, npredict) {\n  str <- cleanSentence(str)\n  words <- unlist(strsplit(str, ' ', fixed = T));\n  for (word_idx in length(words):1) {\n    results <- predict_with_2endWords(words, word_idx)\n    if (nrow(results) > 0)\n      break\n  }\n  if (nrow(results) > 0) {\n    results <- aggregate(count~X3, results, sum)\n    top3results <- head(results[order(results$count, decreasing = T), ], npredict);\n    top3results$X3\n  } else {\n    if (first_time) {\n      r = \"Waiting for a phrase ....\"\n    } else {\n      if (npredict == 1)\n        r = \"Error: unable to predict\"\n      else\n        r = ''\n    }\n    first_time <<- F\n    \"Waiting for a phrase ....\"\n  }\n}\n\nshinyServer(function(input, output) {\n    output$PredictedWords <- renderText(predict_with_trigrams(input$sentence, 1));\n    output$WordsFound <- renderText(predict_with_trigrams(input$sentence, 5));\n    output$servertime <- renderText(format(Sys.time(), \"%a %b %d %X %Y\"))\n})\n",
+    "created" : 1461507718086.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "303826595",
+    "id" : "CFE3FFB5",
+    "lastKnownWriteTime" : 1461507754,
+    "path" : "H:/Datascience/Capstone/CapstoneApp/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "type" : "r_source"
+}

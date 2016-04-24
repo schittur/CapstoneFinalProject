@@ -1,0 +1,17 @@
+{
+    "contents" : "\n# This is the user-interface definition of a Shiny web application.\n# You can find out more about building applications with Shiny here:\n#\n# http://shiny.rstudio.com\n#\n\nlibrary(shiny)\n\nshinyUI(fluidPage(\n\n  # Application title\n  titlePanel(\"Next Word Predictor\"),\n\n  # Sidebar with a slider input for number of bins\n  sidebarLayout(\n    sidebarPanel(\n      p(\"Enter a sentence and press submit button to predict the next word.\"),\n      p(\"This application uses text mining and predicts the next word from a list of trigrams\")\n    ),\n\n    # Show a plot of the generated distribution\n    mainPanel(\n      h3(\"Enter a phrase and press [Submit]\"),\n      textInput(\"sentence\", label=\"\", value = \"\"),\n      submitButton(\"Submit\"), hr(),\n      tags$div(\n        HTML(\"<h4>Most probable next word: </h4><h3 style='color:red'>\"),\n        textOutput(\"PredictedWords\")),\n        HTML(\"</h3></br><hr><h4>All possibilities: </h4>\"),\n        textOutput(\"WordsFound\"),hr(),\n        HTML(\"</br></br>Server time:\"),\n        textOutput(\"servertime\")\n    )\n  )\n))\n",
+    "created" : 1461507713959.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3312094508",
+    "id" : "7EDC98CF",
+    "lastKnownWriteTime" : 1461504368,
+    "path" : "H:/Datascience/Capstone/CapstoneApp/ui.R",
+    "project_path" : "ui.R",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
